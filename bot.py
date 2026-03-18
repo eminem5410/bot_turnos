@@ -6,8 +6,10 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import CommandStart, Command
 
-TOKEN = "8748793286:AAG0H65TXof4mSuwBsovw1ldrp2obyfsbs4"
-OWNER_ID = 8317384337
+import os
+
+TOKEN = os.getenv("TOKEN")
+OWNER_ID = int(os.getenv("OWNER_ID"))
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
