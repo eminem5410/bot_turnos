@@ -1,53 +1,58 @@
+from flask import Flask, render_template_string, request, redirect, session
 import sqlite3
-from flask import Flask
 
 app = Flask(__name__)
+app.secret_key = "8748793286:AAGakkDbCaGE2dVh8XXOx7FzXzpTNdjR0Zs"
 
-def obtener_turnos():
+# 🔐 credenciales (después lo mejoramos)
+USER = "admin"
+PASS = "1234"
 
+def get_turnos():
     conn = sqlite3.connect("turnos.db")
     cursor = conn.cursor()
-
-    cursor.execute("SELECT servicio, fecha, hora, nombre FROM turnos")
-
-    turnos = cursor.fetchall()
-
+    cursor.execute("SELECT id, servicio, fecha, hora, nombre FROM turnos")
+    data = cursor.fetchall()
     conn.close()
+    return data
 
-    return turnos
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        user = request.form.get("user")
+        password = request.form.get("password")
 
+        if user == USER and password == PASS:
+            session["login"] = True
+            return redirect("/panel")
 
-@app.route("/")
-def inicio():
-
-    turnos = obtener_turnos()
-
-    html = """
-    <h1>Panel de Turnos</h1>
-
-    <table border="1" cellpadding="10">
-    <tr>
-    <th>Fecha</th>
-    <th>Hora</th>
-    <th>Cliente</th>
-    <th>Servicio</th>
-    </tr>
+    return """
+    <h2>Login Admin</h2>
+    <form method="post">
+        Usuario: <input name="user"><br>
+        Password: <input name="password" type="password"><br>
+        <button>Entrar</button>
+    </form>
     """
 
+@app.route("/panel")
+def panel():
+    if not session.get("login"):
+        return redirect("/")
+
+    turnos = get_turnos()
+
+    html = "<h2>Turnos</h2><ul>"
     for t in turnos:
-
-        html += f"""
-        <tr>
-        <td>{t[1]}</td>
-        <td>{t[2]}</td>
-        <td>{t[3]}</td>
-        <td>{t[0]}</td>
-        </tr>
-        """
-
-    html += "</table>"
+        html += f"<li>{t[1]} - {t[2]} {t[3]} - {t[4]}</li>"
+    html += "</ul><a href='/logout'>Cerrar sesión</a>"
 
     return html
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
 
-app.run(host="0.0.0.0", port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
