@@ -48,7 +48,7 @@ conn.close()
 # -----------------------
 
 def generar_horarios():
-    return [f"{h:02d}:00" for h in range(9, 19)]
+    return [f"{h:02d}:00" for h in range(9, 20)]
 
 def generar_fechas():
     fechas = []
