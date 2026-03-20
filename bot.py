@@ -98,7 +98,7 @@ async def recordatorios():
             diferencia = turno_datetime - ahora
 
             # entre 5 y 60 minutos antes
-            if 0 < diferencia.total_seconds() < 7200:
+            if 0 < diferencia.total_seconds() < 86400:
 
                 texto = f"""
 ⏰ Recordatorio de turno
